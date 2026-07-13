@@ -35,6 +35,11 @@ Use **Open file** for a DQPN JSON file whose top-level value is an array of plan
 
 Use **Paste** for either that JSON envelope or one raw plan event. The built-in demo is a real GroupSemiJoin logical/physical plan.
 
+**DAX Studio exports** are also supported directly: open the JSON that DAX Studio
+saves (an object with `LogicalQueryPlanRows` / `PhysicalQueryPlanRows`, where each
+row carries an `Operation` and an explicit `Level`). Both trees are rebuilt from
+`Level`, logical before physical.
+
 ## Interaction
 
 | Action | Trigger |

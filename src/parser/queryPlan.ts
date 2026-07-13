@@ -64,6 +64,30 @@ export function parseQueryPlanInput(rawInput: string, name = 'pasted-query-plan'
         message: error instanceof Error ? error.message : 'Invalid JSON input.',
       });
     }
+  } else if (trimmed.startsWith('{')) {
+    try {
+      const studio = extractDaxStudioPlans(JSON.parse(trimmed));
+      if (studio) {
+        eventTexts = studio.texts;
+        diagnostics.push({
+          severity: 'info',
+          code: 'dax-studio',
+          message: `Parsed a DAX Studio query plan export (FileFormatVersion ${studio.version}).`,
+        });
+      } else {
+        diagnostics.push({
+          severity: 'error',
+          code: 'invalid-envelope',
+          message: 'Unrecognized JSON object. Expected a plan-string array, or a DAX Studio export with LogicalQueryPlanRows / PhysicalQueryPlanRows.',
+        });
+      }
+    } catch (error) {
+      diagnostics.push({
+        severity: 'error',
+        code: 'invalid-json',
+        message: error instanceof Error ? error.message : 'Invalid JSON input.',
+      });
+    }
   } else {
     eventTexts = [rawInput];
     diagnostics.push({ severity: 'info', code: 'raw-plan', message: 'Parsed as raw plan text (no JSON envelope).' });
@@ -76,6 +100,41 @@ export function parseQueryPlanInput(rawInput: string, name = 'pasted-query-plan'
   }
 
   return { id: documentId, name, rawInput, events, diagnostics };
+}
+
+/**
+ * DAX Studio exports a JSON object (not the raw string envelope) whose
+ * `LogicalQueryPlanRows` / `PhysicalQueryPlanRows` hold one object per operator
+ * with an un-indented `Operation` string and an explicit `Level`. We rebuild the
+ * tab-indented plan text the line/forest parser already understands, keeping
+ * logical before physical.
+ */
+function extractDaxStudioPlans(value: unknown): { texts: string[]; version: string } | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
+  const object = value as Record<string, unknown>;
+  if (!('LogicalQueryPlanRows' in object) && !('PhysicalQueryPlanRows' in object)) return undefined;
+
+  const texts: string[] = [];
+  for (const key of ['LogicalQueryPlanRows', 'PhysicalQueryPlanRows']) {
+    const text = daxStudioRowsToText(object[key]);
+    if (text) texts.push(text);
+  }
+  const version = object.FileFormatVersion !== undefined ? String(object.FileFormatVersion) : 'unknown';
+  return { texts, version };
+}
+
+function daxStudioRowsToText(rows: unknown): string | undefined {
+  if (!Array.isArray(rows)) return undefined;
+  const lines: string[] = [];
+  for (const row of rows) {
+    if (!row || typeof row !== 'object') continue;
+    const operation = (row as Record<string, unknown>).Operation;
+    if (typeof operation !== 'string' || !operation.trim()) continue;
+    const level = Number((row as Record<string, unknown>).Level);
+    const depth = Number.isFinite(level) && level > 0 ? level : 0;
+    lines.push('\t'.repeat(depth) + operation);
+  }
+  return lines.length ? lines.join('\n') : undefined;
 }
 
 export function parsePlanEvent(rawText: string, index: number, documentId = 'document'): PlanEvent {

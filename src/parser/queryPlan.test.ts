@@ -26,6 +26,22 @@ Order: RelLogOp DependOnCols()() 0-1 RequiredCols(0, 1)('DimCustomer'[FirstName]
 `,
 ]);
 
+const DAX_STUDIO_INPUT = JSON.stringify({
+  FileFormatVersion: 3,
+  LogicalQueryPlanRows: [
+    { Operation: "Order: RelLogOp DependOnCols()() 0-2 RequiredCols(0, 1)('Sales'[ProductId], 'Customer'[CityAndState])", Level: 0, RowNumber: 1 },
+    { Operation: "TopN: RelLogOp DependOnCols()() 0-2 RequiredCols(0, 1)('Sales'[ProductId], 'Customer'[CityAndState])", Level: 1, RowNumber: 2 },
+    { Operation: "Scan_Vertipaq: RelLogOp DependOnCols()() 0-10 RequiredCols(0)('Sales'[ProductId])", Level: 2, RowNumber: 3 },
+  ],
+  PhysicalQueryPlanRows: [
+    { Records: null, Operation: "PartitionIntoGroups: IterPhyOp LogOp=Order IterCols(0, 1)('Sales'[ProductId], 'Customer'[CityAndState]) #Rows=20", Level: 0, RowNumber: 1 },
+    { Records: 1, Operation: 'AggregationSpool<Order>: SpoolPhyOp #Records=1', Level: 1, RowNumber: 2 },
+    { Records: null, Operation: "ColValue<'Customer'[CityAndState]>: LookupPhyOp LogOp='Customer'[CityAndState] LookupCols(1)('Customer'[CityAndState]) String", Level: 2, RowNumber: 3 },
+  ],
+  CommandText: 'EVALUATE TOPN(20, Sales)',
+  ActivityID: '00000000-0000-0000-0000-000000000000',
+});
+
 describe('query plan parser', () => {
   it('parses the real GroupSemiJoin logical and physical trees', () => {
     const document = parseQueryPlanInput(DEMO_INPUT, 'demo.json');
@@ -76,5 +92,26 @@ describe('query plan parser', () => {
     expect(document.events[0].nodes).toHaveLength(1);
     expect(document.events[0].truncated).toBe(true);
     expect(document.events[0].diagnostics[0].code).toBe('truncated-plan');
+  });
+
+  it('reads a DAX Studio export object, using Level for depth', () => {
+    const document = parseQueryPlanInput(DAX_STUDIO_INPUT, '2.json');
+    expect(document.diagnostics.some((d) => d.severity === 'error')).toBe(false);
+    expect(document.diagnostics.some((d) => d.code === 'dax-studio')).toBe(true);
+    expect(document.events.map((event) => event.kind)).toEqual(['vp-logical', 'vp-physical']);
+
+    const logical = document.events[0];
+    expect(logical.nodes).toHaveLength(3);
+    expect(logical.rootIds).toHaveLength(1);
+    // Level -> parentage: Scan (Level 2) under TopN (Level 1) under Order (Level 0).
+    expect(logical.nodes[2].operator).toBe('Scan_Vertipaq');
+    expect(logical.nodes[2].parentId).toBe(logical.nodes[1].id);
+    expect(logical.nodes[1].parentId).toBe(logical.nodes[0].id);
+
+    const physical = document.events[1];
+    expect(physical.nodes).toHaveLength(3);
+    expect(physical.rootIds).toHaveLength(1);
+    const lookup = physical.nodes.find((node) => node.kind === 'LookupPhyOp')!;
+    expect(lookup.columns.lookup?.names[0]).toMatchObject({ table: 'Customer', column: 'CityAndState' });
   });
 });

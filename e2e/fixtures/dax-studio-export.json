@@ -1,0 +1,20 @@
+{
+  "FileFormatVersion": 3,
+  "PhysicalQueryPlanRows": [
+    { "Records": null, "Operation": "PartitionIntoGroups: IterPhyOp LogOp=Order IterCols(0, 1)('Sales'[ProductId], 'Customer'[CityAndState]) #Groups=1 #Rows=20", "IndentedOperation": "PartitionIntoGroups: IterPhyOp LogOp=Order IterCols(0, 1)('Sales'[ProductId], 'Customer'[CityAndState]) #Groups=1 #Rows=20", "Level": 0, "RowNumber": 1, "NextSiblingRowNumber": 7 },
+    { "Records": 1, "Operation": "AggregationSpool<Order>: SpoolPhyOp #Records=1", "IndentedOperation": "    AggregationSpool<Order>: SpoolPhyOp #Records=1", "Level": 1, "RowNumber": 2, "NextSiblingRowNumber": 6 },
+    { "Records": null, "Operation": "Spool_Iterator<SpoolIterator>: IterPhyOp LogOp=Scan_Vertipaq IterCols(0)('Sales'[ProductId]) #Records=20 #KeyCols=1 #ValueCols=0", "IndentedOperation": "        Spool_Iterator<SpoolIterator>: IterPhyOp LogOp=Scan_Vertipaq IterCols(0)('Sales'[ProductId]) #Records=20 #KeyCols=1 #ValueCols=0", "Level": 2, "RowNumber": 3, "NextSiblingRowNumber": 6 },
+    { "Records": 20, "Operation": "ProjectionSpool<ProjectFusion<>>: SpoolPhyOp #Records=20", "IndentedOperation": "            ProjectionSpool<ProjectFusion<>>: SpoolPhyOp #Records=20", "Level": 3, "RowNumber": 4, "NextSiblingRowNumber": 6 },
+    { "Records": null, "Operation": "Cache: IterPhyOp #FieldCols=1 #ValueCols=0", "IndentedOperation": "                Cache: IterPhyOp #FieldCols=1 #ValueCols=0", "Level": 4, "RowNumber": 5, "NextSiblingRowNumber": 6 },
+    { "Records": null, "Operation": "ColValue<'Customer'[CityAndState]>: LookupPhyOp LogOp='Customer'[CityAndState] LookupCols(1)('Customer'[CityAndState]) String", "IndentedOperation": "    ColValue<'Customer'[CityAndState]>: LookupPhyOp LogOp='Customer'[CityAndState] LookupCols(1)('Customer'[CityAndState]) String", "Level": 1, "RowNumber": 6, "NextSiblingRowNumber": 7 }
+  ],
+  "LogicalQueryPlanRows": [
+    { "Operation": "Order: RelLogOp DependOnCols()() 0-2 RequiredCols(0, 1)('Sales'[ProductId], 'Customer'[CityAndState])", "IndentedOperation": "Order: RelLogOp DependOnCols()() 0-2 RequiredCols(0, 1)('Sales'[ProductId], 'Customer'[CityAndState])", "Level": 0, "RowNumber": 1, "NextSiblingRowNumber": 5 },
+    { "Operation": "TopN: RelLogOp DependOnCols()() 0-2 RequiredCols(0, 1)('Sales'[ProductId], 'Customer'[CityAndState])", "IndentedOperation": "    TopN: RelLogOp DependOnCols()() 0-2 RequiredCols(0, 1)('Sales'[ProductId], 'Customer'[CityAndState])", "Level": 1, "RowNumber": 2, "NextSiblingRowNumber": 4 },
+    { "Operation": "Scan_Vertipaq: RelLogOp DependOnCols()() 0-10 RequiredCols(0)('Sales'[ProductId])", "IndentedOperation": "        Scan_Vertipaq: RelLogOp DependOnCols()() 0-10 RequiredCols(0)('Sales'[ProductId])", "Level": 2, "RowNumber": 3, "NextSiblingRowNumber": 4 },
+    { "Operation": "Sum_Vertipaq: ScaLogOp DependOnCols(0)('Sales'[ProductId]) Integer DominantValue=BLANK", "IndentedOperation": "    Sum_Vertipaq: ScaLogOp DependOnCols(0)('Sales'[ProductId]) Integer DominantValue=BLANK", "Level": 1, "RowNumber": 4, "NextSiblingRowNumber": 5 }
+  ],
+  "CommandText": "EVALUATE TOPN(20, SUMMARIZECOLUMNS('Sales'[ProductId], 'Customer'[CityAndState]))",
+  "ActivityID": "00000000-0000-0000-0000-000000000000",
+  "RequestID": "00000000-0000-0000-0000-000000000000"
+}

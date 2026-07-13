@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.dirname(fileURLToPath(import.meta.url));
 const fixture = path.join(root, 'fixtures', 'group-semijoin-queryplan.json');
+const daxStudioFixture = path.join(root, 'fixtures', 'dax-studio-export.json');
 
 test('renders the built-in logical and physical GroupSemiJoin plans', async ({ page }) => {
   await page.goto('/');
@@ -49,6 +50,16 @@ test('opens a DQPN JSON file and preserves the filename', async ({ page }) => {
   await page.locator('input[type="file"]').setInputFiles(fixture);
   await expect(page.getByTestId('top-bar')).toContainText('group-semijoin-queryplan.json');
   await expect(page.getByTestId('plan-panel-vp-physical').locator('.react-flow__node')).toHaveCount(11);
+});
+
+test('opens a DAX Studio export object and renders both plans', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('open-file').click();
+  await page.locator('input[type="file"]').setInputFiles(daxStudioFixture);
+  await expect(page.getByTestId('top-bar')).toContainText('dax-studio-export.json');
+  await expect(page.getByTestId('plan-panel-vp-logical').locator('.react-flow__node')).toHaveCount(4);
+  await expect(page.getByTestId('plan-panel-vp-physical').locator('.react-flow__node')).toHaveCount(6);
+  await expect(page.getByTestId('event-sidebar')).toContainText('DAX Studio');
 });
 
 test('searches both plans by column and centres the chosen operator', async ({ page }) => {
