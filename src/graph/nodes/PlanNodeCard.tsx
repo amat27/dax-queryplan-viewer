@@ -52,6 +52,9 @@ function PlanNodeCardImpl({ data }: { data: PlanNodeData }) {
     );
   const records = node.metrics.find((metric) => metric.name === 'Records');
   const keyCols = node.metrics.find((metric) => metric.name === 'KeyCols');
+  const dominantValue = node.dominantValue && !/^(BLANK|NONE)$/i.test(node.dominantValue)
+    ? node.dominantValue
+    : undefined;
 
   return (
     <article
@@ -135,6 +138,14 @@ function PlanNodeCardImpl({ data }: { data: PlanNodeData }) {
 
         <div className="mt-auto pr-2.5 pb-2 pt-1 flex items-center gap-1.5 min-w-0">
           <div className="flex items-center gap-1.5 min-w-0 overflow-hidden">
+            {dominantValue && (
+              <span
+                className="font-mono text-[9px] font-semibold text-violet-600 dark:text-violet-300 shrink-0 truncate"
+                title="DominantValue (the scalar operator's value; for a Constant this is the literal)"
+              >
+                = {dominantValue}
+              </span>
+            )}
             {node.relationRange && (
               <span className="font-mono text-[9px] text-muted-foreground/70 shrink-0 tabular-nums" title="Relation-space column-slot range">
                 slots {node.relationRange.first}-{node.relationRange.last}

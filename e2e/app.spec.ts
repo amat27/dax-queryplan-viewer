@@ -102,6 +102,19 @@ test('supports raw-plan paste and reports that there is no physical event', asyn
   await expect(page.getByTestId('event-sidebar')).toContainText('Parsed as raw plan text');
 });
 
+test('shows a Constant DominantValue on the node but hides BLANK', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('open-paste').click();
+  await page.getByTestId('paste-input').fill(
+    "Order: RelLogOp DependOnCols()() 0-0 RequiredCols(0)('Sales'[ProductId])\n" +
+    "\tConstant: ScaLogOp DependOnCols()() Integer DominantValue=501\n" +
+    "\tCalculate: ScaLogOp DependOnCols(0)('Sales'[ProductId]) Integer DominantValue=BLANK\n",
+  );
+  await page.getByTestId('parse-paste').click();
+  await expect(page.getByTestId('plan-node-2-Constant')).toContainText('= 501');
+  await expect(page.getByTestId('plan-node-3-Calculate')).not.toContainText('BLANK');
+});
+
 test('serves an installable web app manifest with png icons', async ({ page, request }) => {
   await page.goto('/');
 
