@@ -115,7 +115,7 @@
 .react-flow__pane.dragging { cursor: grabbing; }
 .react-flow__handle { width: 1px; height: 1px; border: 0; background: transparent; pointer-events: none; }
 .react-flow__attribution { display: none; }
-.react-flow__minimap { width: 150px !important; height: 100px !important; }
+.react-flow__minimap { width: 150px !important; height: 100px !important; overflow: hidden; }
 ::-webkit-scrollbar { width: 9px; height: 9px; }
 ::-webkit-scrollbar-thumb { background: hsl(var(--muted)); border-radius: 999px; }
 ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.35); }

@@ -150,11 +150,11 @@ test('serves an installable web app manifest with png icons', async ({ page, req
 test('version badge opens the changelog with build info', async ({ page }) => {
   await page.goto('/');
   const badge = page.getByTestId('version-badge');
-  await expect(badge).toContainText('v0.3.0');
+  await expect(badge).toHaveText(/^v\d+\.\d+\.\d+$/);
   await badge.click();
   const dialog = page.getByTestId('changelog-dialog');
   await expect(dialog).toBeVisible();
-  await expect(page.getByTestId('changelog-version')).toHaveText('v0.3.0');
+  await expect(page.getByTestId('changelog-version')).toHaveText(/^v\d+\.\d+\.\d+$/);
   await expect(dialog).toContainText("What's new");
   await expect(page.getByTestId('build-commit')).toContainText('commit');
 });

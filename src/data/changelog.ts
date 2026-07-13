@@ -13,6 +13,13 @@ export interface ChangelogEntry {
 /** Newest first. The top entry's version should match package.json. */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.3.1',
+    date: '2026-07-13',
+    changes: [
+      "Fix the minimap's mismatched rounded corner (clip the mask to the rounded container).",
+    ],
+  },
+  {
     version: '0.3.0',
     date: '2026-07-13',
     changes: [
