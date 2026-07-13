@@ -1,0 +1,15 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+.playwright-mcp/
+*-visual-qa*.png
+redesign-*.png
+palette-*.png
+card-detail*.png
+node-card-*.png
+preview.*.log
+*.tsbuildinfo
+
+# Internal exported chat transcripts — never publish
+dcc-ddl-dml-*.md
