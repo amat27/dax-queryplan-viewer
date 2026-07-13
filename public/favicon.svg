@@ -1,12 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
-    <linearGradient id="g" x1="8" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#8b5cf6"/>
-      <stop offset="0.5" stop-color="#0ea5e9"/>
-      <stop offset="1" stop-color="#34d399"/>
+    <linearGradient id="qpg" x1="6" y1="6" x2="58" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#6366f1"/>
+      <stop offset="1" stop-color="#14b8a6"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="15" fill="url(#g)"/>
-  <path d="M18 18h13v9H18zm15 19h13v9H33zM24.5 27v10H33" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
-  <circle cx="24.5" cy="37" r="3" fill="#fff"/>
+  <rect width="64" height="64" rx="15" fill="url(#qpg)"/>
+  <path d="M32 19V30M15 30H49M15 30V41M49 30V41" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.95"/>
+  <rect x="23" y="8" width="18" height="11" rx="3" fill="#fff"/>
+  <rect x="6" y="41" width="18" height="11" rx="3" fill="#fff"/>
+  <rect x="40" y="41" width="18" height="11" rx="3" fill="#fff"/>
 </svg>

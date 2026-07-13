@@ -45,7 +45,7 @@
   .top-bar { @apply h-12 shrink-0 px-3 border-b border-border flex items-center gap-2 bg-card/80 backdrop-blur overflow-x-auto overflow-y-hidden; scrollbar-width: none; }
   .top-bar::-webkit-scrollbar { display: none; }
   .brand { @apply flex items-center gap-2 mr-1; }
-  .brand-mark { @apply h-7 w-7 rounded-md grid place-items-center text-[9px] font-black tracking-tighter text-white bg-gradient-to-br from-violet-500 via-sky-500 to-emerald-400 shadow-sm; }
+  .brand-mark { @apply h-7 w-7 rounded-lg grid place-items-center text-white bg-gradient-to-br from-indigo-500 to-teal-500 shadow-sm ring-1 ring-inset ring-white/15; }
   .document-name { @apply ml-1 max-w-[260px] truncate font-mono text-[10px] text-muted-foreground shrink; }
   .btn { @apply inline-flex items-center justify-center gap-1.5 rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50; }
   .btn-primary { @apply btn h-8 px-3 bg-foreground text-background hover:bg-foreground/90; }

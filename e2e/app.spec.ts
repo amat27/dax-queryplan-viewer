@@ -14,6 +14,13 @@ test('renders the built-in logical and physical GroupSemiJoin plans', async ({ p
   await expect(page.getByTestId('event-sidebar')).toContainText('Parsed without diagnostics');
 });
 
+test('brand mark is a custom plan-tree glyph, not a text wordmark', async ({ page }) => {
+  await page.goto('/');
+  const mark = page.locator('.brand-mark');
+  await expect(mark.locator('svg')).toBeVisible();
+  await expect(mark).not.toContainText('QP');
+});
+
 test('shows every non-empty column role on an operator card', async ({ page }) => {
   await page.goto('/');
   const logicalScan = page.getByTestId('plan-node-6-Scan_Vertipaq');

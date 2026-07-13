@@ -53,7 +53,14 @@ export function TopBar({ onPaste, onSearch }: Props) {
     <Tooltip.Provider delayDuration={180}>
       <header className="top-bar" data-testid="top-bar">
         <div className="brand shrink-0">
-          <div className="brand-mark">QP</div>
+          <div className="brand-mark" aria-label="DAX Query Plan Viewer">
+            <svg viewBox="0 0 64 64" className="h-[18px] w-[18px]" aria-hidden="true">
+              <path d="M32 19V30M15 30H49M15 30V41M49 30V41" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+              <rect x="23" y="8" width="18" height="11" rx="3" fill="#fff" />
+              <rect x="6" y="41" width="18" height="11" rx="3" fill="#fff" />
+              <rect x="40" y="41" width="18" height="11" rx="3" fill="#fff" />
+            </svg>
+          </div>
           <div className="leading-tight">
             <div className="font-semibold text-sm">DAX Query Plan</div>
             <div className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">Logical / Physical</div>
