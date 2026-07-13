@@ -102,6 +102,38 @@ test('supports raw-plan paste and reports that there is no physical event', asyn
   await expect(page.getByTestId('event-sidebar')).toContainText('Parsed as raw plan text');
 });
 
+test('serves an installable web app manifest with png icons', async ({ page, request }) => {
+  await page.goto('/');
+
+  const href = await page.locator('link[rel="manifest"]').first().getAttribute('href');
+  expect(href).toBeTruthy();
+  const theme = await page.locator('meta[name="theme-color"]').first().getAttribute('content');
+  expect(theme).toBe('#0b1220');
+
+  const response = await request.get(href!);
+  expect(response.status()).toBe(200);
+  const manifest = await response.json();
+  expect(manifest.name).toBe('DAX Query Plan Viewer');
+  expect(manifest.display).toBe('standalone');
+  expect(manifest.start_url).toBe('/');
+  const sizes = manifest.icons.map((icon: { sizes: string }) => icon.sizes);
+  expect(sizes).toContain('192x192');
+  expect(sizes).toContain('512x512');
+  const purposes = manifest.icons.map((icon: { purpose?: string }) => icon.purpose);
+  expect(purposes).toContain('maskable');
+
+  for (const icon of manifest.icons) {
+    if (icon.type !== 'image/png') continue;
+    const iconResponse = await request.get(icon.src);
+    expect(iconResponse.status(), icon.src).toBe(200);
+    expect((await iconResponse.body()).length).toBeGreaterThan(500);
+  }
+
+  const ico = await request.get('/favicon.ico');
+  expect(ico.status()).toBe(200);
+  expect((await ico.body()).length).toBeGreaterThan(500);
+});
+
 test('does not create page-level overflow on a narrow viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
