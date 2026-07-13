@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import {
   ArrowDown,
@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { exportVisiblePlanSvg } from '../lib/export';
 import { cn } from '../lib/cn';
+import { BUILD_INFO } from '../data/changelog';
+import { ChangelogDialog } from './ChangelogDialog';
 import { useAppStore } from '../state/store';
 import type { ViewMode } from '../types';
 
@@ -41,6 +43,7 @@ export function TopBar({ onPaste, onSearch }: Props) {
   const theme = useAppStore((state) => state.theme);
   const setTheme = useAppStore((state) => state.setTheme);
   const input = useRef<HTMLInputElement | null>(null);
+  const [changelogOpen, setChangelogOpen] = useState(false);
 
   const openFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -65,6 +68,14 @@ export function TopBar({ onPaste, onSearch }: Props) {
             <div className="font-semibold text-sm">DAX Query Plan</div>
             <div className="text-[9px] uppercase tracking-[0.18em] text-muted-foreground">Logical / Physical</div>
           </div>
+          <button
+            className="version-badge"
+            data-testid="version-badge"
+            onClick={() => setChangelogOpen(true)}
+            title="What's new and the deployed build"
+          >
+            v{BUILD_INFO.version}
+          </button>
         </div>
 
         <button className="btn-primary shrink-0" onClick={() => input.current?.click()} data-testid="open-file">
@@ -102,6 +113,7 @@ export function TopBar({ onPaste, onSearch }: Props) {
           {theme === 'light' ? <Sun className="h-3.5 w-3.5" /> : theme === 'dark' ? <Moon className="h-3.5 w-3.5" /> : <Monitor className="h-3.5 w-3.5" />}
         </ToolButton>
       </header>
+      <ChangelogDialog open={changelogOpen} onOpenChange={setChangelogOpen} />
     </Tooltip.Provider>
   );
 }

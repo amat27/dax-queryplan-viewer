@@ -47,6 +47,7 @@
   .brand { @apply flex items-center gap-2 mr-1; }
   .brand-mark { @apply h-7 w-7 rounded-lg grid place-items-center text-white bg-gradient-to-br from-indigo-500 to-teal-500 shadow-sm ring-1 ring-inset ring-white/15; }
   .document-name { @apply ml-1 max-w-[260px] truncate font-mono text-[10px] text-muted-foreground shrink; }
+  .version-badge { @apply ml-1.5 shrink-0 rounded-full border border-border bg-muted/50 px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground hover:bg-accent hover:text-foreground transition-colors; }
   .btn { @apply inline-flex items-center justify-center gap-1.5 rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50; }
   .btn-primary { @apply btn h-8 px-3 bg-foreground text-background hover:bg-foreground/90; }
   .btn-outline { @apply btn h-8 px-3 border border-border bg-transparent hover:bg-accent; }

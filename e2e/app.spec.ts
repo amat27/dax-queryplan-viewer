@@ -147,6 +147,18 @@ test('serves an installable web app manifest with png icons', async ({ page, req
   expect((await ico.body()).length).toBeGreaterThan(500);
 });
 
+test('version badge opens the changelog with build info', async ({ page }) => {
+  await page.goto('/');
+  const badge = page.getByTestId('version-badge');
+  await expect(badge).toContainText('v0.3.0');
+  await badge.click();
+  const dialog = page.getByTestId('changelog-dialog');
+  await expect(dialog).toBeVisible();
+  await expect(page.getByTestId('changelog-version')).toHaveText('v0.3.0');
+  await expect(dialog).toContainText("What's new");
+  await expect(page.getByTestId('build-commit')).toContainText('commit');
+});
+
 test('does not create page-level overflow on a narrow viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
