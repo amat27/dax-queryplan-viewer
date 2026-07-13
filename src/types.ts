@@ -52,6 +52,9 @@ export interface PlanNode {
   logicalOperator?: string;
   scalarType?: string;
   dominantValue?: string;
+  /** A literal scalar value carried by the operator (e.g. a Constant's value,
+   *  from the logical DominantValue or the physical trailing token). */
+  value?: string;
   relationRange?: { first: string; last: string };
   columns: Partial<Record<ColumnRole, ColumnSet>>;
   metrics: PlanMetric[];
@@ -93,6 +96,8 @@ export interface PlanDocument {
   rawInput: string;
   events: PlanEvent[];
   diagnostics: ParseDiagnostic[];
+  /** The original DAX statement, when the source carried it (DAX Studio export). */
+  query?: string;
 }
 
 export interface MappingCandidate {

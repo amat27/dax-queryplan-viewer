@@ -113,5 +113,18 @@ describe('query plan parser', () => {
     expect(physical.rootIds).toHaveLength(1);
     const lookup = physical.nodes.find((node) => node.kind === 'LookupPhyOp')!;
     expect(lookup.columns.lookup?.names[0]).toMatchObject({ table: 'Customer', column: 'CityAndState' });
+    expect(document.query).toBe('EVALUATE TOPN(20, Sales)');
+  });
+
+  it('captures a Constant scalar value from both logical and physical forms', () => {
+    const logical = parseQueryPlanInput('Constant: ScaLogOp DependOnCols()() Integer DominantValue=501').events[0];
+    expect(logical.nodes[0].value).toBe('501');
+
+    const physical = parseQueryPlanInput('Constant: LookupPhyOp LogOp=Constant Integer 1').events[0];
+    expect(physical.nodes[0]).toMatchObject({ kind: 'LookupPhyOp', scalarType: 'Integer', value: '1' });
+
+    // Non-constant scalar defaults stay off the value field.
+    const calc = parseQueryPlanInput("Calculate: ScaLogOp DependOnCols(0)('Sales'[ProductId]) Integer DominantValue=BLANK").events[0];
+    expect(calc.nodes[0].value).toBeUndefined();
   });
 });

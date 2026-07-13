@@ -59,6 +59,9 @@
   .tooltip-content { @apply z-50 rounded-md border border-border bg-popover px-2 py-1 text-[11px] shadow-lg animate-fade-in; }
   .workspace { @apply flex-1 min-h-0 flex relative; }
   .event-sidebar { @apply w-[250px] shrink-0 border-r border-border bg-card/35 flex flex-col min-h-0; }
+  .event-sidebar.collapsed { @apply w-9 items-center py-2 gap-2; }
+  .sidebar-expand { @apply h-8 w-8 grid place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors; }
+  .sidebar-rail-label { @apply text-[9px] font-semibold uppercase tracking-[0.13em] text-muted-foreground; writing-mode: vertical-rl; }
   .sidebar-document { @apply h-12 shrink-0 px-3 border-b border-border flex items-center gap-2; }
   .sidebar-scroll { @apply flex-1 min-h-0 overflow-y-auto pb-4; }
   .section-title { @apply px-3 pt-4 pb-1.5 text-[9px] font-semibold uppercase tracking-[0.13em] text-muted-foreground; }
@@ -104,6 +107,7 @@
   .confidence.medium { @apply bg-amber-500/15 text-amber-700 dark:text-amber-300; }
   .confidence.low { @apply bg-slate-500/15 text-slate-600 dark:text-slate-300; }
   .raw-line { @apply overflow-x-auto whitespace-pre rounded bg-slate-950 p-2.5 font-mono text-[9.5px] leading-relaxed text-slate-200; }
+  .query-text { @apply max-h-[60vh] overflow-auto whitespace-pre-wrap break-words bg-slate-950 p-4 font-mono text-[12px] leading-relaxed text-slate-100; }
   .dialog-overlay { @apply fixed inset-0 z-40 bg-black/45 backdrop-blur-[1px] animate-fade-in; }
   .dialog-content { @apply fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg border border-border bg-card shadow-2xl animate-fade-in; }
   .glass { @apply rounded-md border border-border/70 bg-card/85 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-card/70; }
@@ -131,6 +135,8 @@
   .brand > div:last-child { display: none; }
   .workspace { flex-direction: column; }
   .event-sidebar { width: 100%; height: 108px; border-right: 0; border-bottom: 1px solid hsl(var(--border)); }
+  .event-sidebar.collapsed { width: 100%; height: auto; flex-direction: row; align-items: center; gap: 8px; padding: 4px 8px; }
+  .event-sidebar.collapsed .sidebar-rail-label { writing-mode: horizontal-tb; }
   .sidebar-document { height: 36px; }
   .sidebar-scroll { overflow-x: auto; overflow-y: hidden; padding: 6px; }
   .sidebar-scroll > * { display: none; }

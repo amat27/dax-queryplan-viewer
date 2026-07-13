@@ -26,6 +26,7 @@ interface AppState {
   theme: 'light' | 'dark' | 'system';
   showReferences: boolean;
   showMappings: boolean;
+  sidebarCollapsed: boolean;
   selectedNodeId: string | null;
   selectedColumnKey: string | null;
   searchQuery: string;
@@ -40,6 +41,7 @@ interface AppState {
   setTheme: (theme: 'light' | 'dark' | 'system') => void;
   setShowReferences: (show: boolean) => void;
   setShowMappings: (show: boolean) => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
   setSelectedNode: (id: string | null) => void;
   selectAndCenter: (eventId: string, nodeId: string) => void;
   setSelectedColumnKey: (key: string | null) => void;
@@ -68,6 +70,7 @@ export const useAppStore = create<AppState>((set) => ({
   theme: 'system',
   showReferences: true,
   showMappings: true,
+  sidebarCollapsed: false,
   selectedNodeId: null,
   selectedColumnKey: null,
   searchQuery: '',
@@ -122,6 +125,7 @@ export const useAppStore = create<AppState>((set) => ({
   setTheme: (theme) => set({ theme }),
   setShowReferences: (showReferences) => set({ showReferences }),
   setShowMappings: (showMappings) => set({ showMappings }),
+  setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
   setSelectedNode: (selectedNodeId) => set({ selectedNodeId, selectedColumnKey: null }),
   selectAndCenter: (eventId, nodeId) => set((state) => ({
     selectedNodeId: nodeId,

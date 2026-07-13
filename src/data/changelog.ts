@@ -13,6 +13,15 @@ export interface ChangelogEntry {
 /** Newest first. The top entry's version should match package.json. */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.4.0',
+    date: '2026-07-13',
+    changes: [
+      'Collapsible left sidebar.',
+      'Show a physical Constant operator\'s value on the node (e.g. "Constant: LookupPhyOp … Integer 1" → = 1).',
+      'Show the source DAX query when the file carries it (DAX Studio CommandText) via a Query button.',
+    ],
+  },
+  {
     version: '0.3.1',
     date: '2026-07-13',
     changes: [

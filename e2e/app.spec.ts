@@ -62,6 +62,34 @@ test('opens a DAX Studio export object and renders both plans', async ({ page })
   await expect(page.getByTestId('event-sidebar')).toContainText('DAX Studio');
 });
 
+test('shows the source DAX query from a DAX Studio export', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByTestId('open-query')).toHaveCount(0); // demo has no query
+  await page.getByTestId('open-file').click();
+  await page.locator('input[type="file"]').setInputFiles(daxStudioFixture);
+  await page.getByTestId('open-query').click();
+  await expect(page.getByTestId('query-dialog')).toBeVisible();
+  await expect(page.getByTestId('query-text')).toContainText('SUMMARIZECOLUMNS');
+});
+
+test('the left sidebar can collapse and expand', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('.event-sidebar')).not.toHaveClass(/collapsed/);
+  await page.getByTestId('sidebar-collapse').click();
+  await expect(page.locator('.event-sidebar')).toHaveClass(/collapsed/);
+  await page.getByTestId('sidebar-expand').click();
+  await expect(page.locator('.event-sidebar')).not.toHaveClass(/collapsed/);
+  await expect(page.getByTestId('event-sidebar')).toContainText('Events');
+});
+
+test('shows a physical Constant value on the node', async ({ page }) => {
+  await page.goto('/');
+  await page.getByTestId('open-paste').click();
+  await page.getByTestId('paste-input').fill('Constant: LookupPhyOp LogOp=Constant Integer 1\n');
+  await page.getByTestId('parse-paste').click();
+  await expect(page.getByTestId('plan-node-1-Constant')).toContainText('= 1');
+});
+
 test('searches both plans by column and centres the chosen operator', async ({ page }) => {
   await page.goto('/');
   await page.keyboard.press('/');

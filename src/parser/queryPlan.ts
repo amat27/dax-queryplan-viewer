@@ -37,6 +37,7 @@ const COLUMN_FIELDS: Array<[string, ColumnRole]> = [
 export function parseQueryPlanInput(rawInput: string, name = 'pasted-query-plan'): PlanDocument {
   const diagnostics: ParseDiagnostic[] = [];
   let eventTexts: string[] = [];
+  let query: string | undefined;
   const trimmed = rawInput.trim();
 
   if (!trimmed) {
@@ -69,6 +70,7 @@ export function parseQueryPlanInput(rawInput: string, name = 'pasted-query-plan'
       const studio = extractDaxStudioPlans(JSON.parse(trimmed));
       if (studio) {
         eventTexts = studio.texts;
+        query = studio.query;
         diagnostics.push({
           severity: 'info',
           code: 'dax-studio',
@@ -99,7 +101,7 @@ export function parseQueryPlanInput(rawInput: string, name = 'pasted-query-plan'
     diagnostics.push({ severity: 'info', code: 'empty-envelope', message: 'The JSON array contains no plan events.' });
   }
 
-  return { id: documentId, name, rawInput, events, diagnostics };
+  return { id: documentId, name, rawInput, events, diagnostics, query };
 }
 
 /**
@@ -109,7 +111,7 @@ export function parseQueryPlanInput(rawInput: string, name = 'pasted-query-plan'
  * tab-indented plan text the line/forest parser already understands, keeping
  * logical before physical.
  */
-function extractDaxStudioPlans(value: unknown): { texts: string[]; version: string } | undefined {
+function extractDaxStudioPlans(value: unknown): { texts: string[]; version: string; query?: string } | undefined {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined;
   const object = value as Record<string, unknown>;
   if (!('LogicalQueryPlanRows' in object) && !('PhysicalQueryPlanRows' in object)) return undefined;
@@ -120,7 +122,8 @@ function extractDaxStudioPlans(value: unknown): { texts: string[]; version: stri
     if (text) texts.push(text);
   }
   const version = object.FileFormatVersion !== undefined ? String(object.FileFormatVersion) : 'unknown';
-  return { texts, version };
+  const query = typeof object.CommandText === 'string' && object.CommandText.trim() ? object.CommandText : undefined;
+  return { texts, version, query };
 }
 
 function daxStudioRowsToText(rows: unknown): string | undefined {
@@ -246,9 +249,12 @@ function parseOperatorLine(content: string, eventId: string, lineNumber: number,
     value: match[2],
   }));
   const rangeMatch = /(?:^|\s)(\d+)-(\d+)(?=\s|$)/.exec(tail);
-  const scalarType = kind === 'ScaLogOp' || kind === 'LookupPhyOp'
-    ? findScalarType(tail)
-    : undefined;
+  const scalar = kind === 'ScaLogOp' || kind === 'LookupPhyOp' || kind === 'ScaOp' || kind === 'ScaExpr'
+    ? parseScalarTail(tail)
+    : {};
+  const isConstant = operator === 'Constant' || attributes.LogOp === 'Constant';
+  const meaningfulDominant = dominantValue && !/^(BLANK|NONE)$/i.test(dominantValue) ? dominantValue : undefined;
+  const value = isConstant ? (meaningfulDominant ?? scalar.value) : undefined;
 
   return {
     id: `${eventId}:line-${lineNumber}`,
@@ -263,8 +269,9 @@ function parseOperatorLine(content: string, eventId: string, lineNumber: number,
     variableName: attributes.VarName,
     referencedVariable: attributes.RefVarName,
     logicalOperator: attributes.LogOp,
-    scalarType,
+    scalarType: scalar.type,
     dominantValue,
+    value,
     relationRange: rangeMatch ? { first: rangeMatch[1], last: rangeMatch[2] } : undefined,
     columns,
     metrics,
@@ -325,14 +332,16 @@ function findAttribute(tail: string, key: string): string | undefined {
   return match?.[1];
 }
 
-function findScalarType(tail: string): string | undefined {
-  const withoutFields = tail
+function parseScalarTail(tail: string): { type?: string; value?: string } {
+  const leftover = tail
     .replace(/(?:DependOnCols|RequiredCols|IterCols|LookupCols|OutputCols|FreeCols|SelfCols)\([^)]*\)\([^)]*\)/g, ' ')
     .replace(/(?:^|\s)(?:VarName|RefVarName|LogOp|MeasureRef|DominantValue)=[^\s]+/g, ' ')
     .replace(/#\w+=[^\s]+/g, ' ')
     .replace(/(?:^|\s)\d+-\d+(?=\s|$)/g, ' ')
     .trim();
-  return withoutFields.split(/\s+/).find(Boolean);
+  const tokens = leftover.split(/\s+/).filter(Boolean);
+  if (tokens.length === 0) return {};
+  return { type: tokens[0], value: tokens.length > 1 ? tokens.slice(1).join(' ') : undefined };
 }
 
 function buildVariableReferences(nodes: PlanNode[]): PlanReference[] {

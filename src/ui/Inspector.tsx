@@ -81,8 +81,9 @@ export function Inspector() {
           ))}
         </InspectorSection>
 
-        {(node.relationRange || node.dominantValue || node.metrics.length > 0) && (
+        {(node.relationRange || node.dominantValue || node.value || node.metrics.length > 0) && (
           <InspectorSection title="Runtime / layout">
+            {node.value && !node.dominantValue && <FactRow label="Value" value={node.value} help="The operator's literal scalar value (e.g. a Constant)." />}
             {node.relationRange && <FactRow label="Relation slots" value={`${node.relationRange.first}-${node.relationRange.last}`} help={GLOSSARY.relationRange} />}
             {node.dominantValue && <FactRow label="DominantValue" value={node.dominantValue} help={GLOSSARY.DominantValue} />}
             {node.metrics.map((metric) => <FactRow key={metric.name} label={`#${metric.name}`} value={metric.value} help={GLOSSARY[metric.name]} />)}
