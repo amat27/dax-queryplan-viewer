@@ -13,6 +13,15 @@ export interface ChangelogEntry {
 /** Newest first. The top entry's version should match package.json. */
 export const CHANGELOG: ChangelogEntry[] = [
   {
+    version: '0.5.0',
+    date: '2026-07-13',
+    changes: [
+      'Draggable dividers: resize the sidebar, the two plans, and the Inspector.',
+      'The source query is now a collapsible top strip (toggle it and still see both trees), instead of a modal.',
+      'Fix the view-mode segmented control\'s misaligned active highlight.',
+    ],
+  },
+  {
     version: '0.4.0',
     date: '2026-07-13',
     changes: [

@@ -11,6 +11,7 @@ export function EventSidebar() {
   const selectAndCenter = useAppStore((state) => state.selectAndCenter);
   const collapsed = useAppStore((state) => state.sidebarCollapsed);
   const setCollapsed = useAppStore((state) => state.setSidebarCollapsed);
+  const sidebarWidth = useAppStore((state) => state.sidebarWidth);
   const diagnosticCount = document.diagnostics.length + document.events.reduce((sum, event) => sum + event.diagnostics.length, 0);
 
   if (collapsed) {
@@ -31,7 +32,7 @@ export function EventSidebar() {
   }
 
   return (
-    <aside className="event-sidebar" data-testid="event-sidebar">
+    <aside className="event-sidebar" data-testid="event-sidebar" style={{ '--sidebar-w': `${sidebarWidth}px` } as React.CSSProperties}>
       <div className="sidebar-document">
         <FileJson className="h-4 w-4 text-sky-500 shrink-0" />
         <div className="min-w-0">

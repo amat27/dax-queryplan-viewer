@@ -53,12 +53,12 @@
   .btn-outline { @apply btn h-8 px-3 border border-border bg-transparent hover:bg-accent; }
   .btn-ghost { @apply btn h-8 px-2.5 bg-transparent hover:bg-accent; }
   .kbd { @apply inline-flex h-5 items-center rounded border border-border bg-muted px-1.5 text-[9px] font-medium text-muted-foreground; }
-  .segmented { @apply h-8 inline-flex rounded-md border border-border bg-muted/40 p-0.5 shrink-0; }
-  .segmented-button { @apply h-6 px-2 flex items-center gap-1 rounded text-[10px] text-muted-foreground hover:text-foreground; }
+  .segmented { @apply h-8 inline-flex items-center rounded-md border border-border bg-muted/40 p-0.5 shrink-0; }
+  .segmented-button { @apply h-full px-2 flex items-center gap-1 rounded text-[10px] text-muted-foreground hover:text-foreground; }
   .segmented-button.active { @apply bg-card text-foreground shadow-sm; }
   .tooltip-content { @apply z-50 rounded-md border border-border bg-popover px-2 py-1 text-[11px] shadow-lg animate-fade-in; }
   .workspace { @apply flex-1 min-h-0 flex relative; }
-  .event-sidebar { @apply w-[250px] shrink-0 border-r border-border bg-card/35 flex flex-col min-h-0; }
+  .event-sidebar { @apply shrink-0 border-r border-border bg-card/35 flex flex-col min-h-0; width: var(--sidebar-w, 250px); }
   .event-sidebar.collapsed { @apply w-9 items-center py-2 gap-2; }
   .sidebar-expand { @apply h-8 w-8 grid place-items-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground transition-colors; }
   .sidebar-rail-label { @apply text-[9px] font-semibold uppercase tracking-[0.13em] text-muted-foreground; writing-mode: vertical-rl; }
@@ -76,17 +76,23 @@
   .rule-card { @apply rounded border border-border/70 bg-card/50 px-2 py-1.5; }
   .rule-card strong { @apply text-foreground; }
   .canvas-workspace { @apply flex-1 min-w-0 min-h-0 relative flex flex-col; }
-  .canvas-grid { @apply flex-1 min-h-0 grid gap-px bg-border; }
-  .canvas-workspace[data-view="split"] .canvas-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .canvas-workspace:not([data-view="split"]) .canvas-grid { grid-template-columns: minmax(0, 1fr); }
-  .plan-panel { @apply min-w-0 min-h-0 bg-background relative flex flex-col overflow-hidden; }
+  .canvas-grid { @apply flex-1 min-h-0 flex; gap: 1px; background: hsl(var(--border)); }
+  .plan-slot { @apply flex min-w-0 min-h-0 bg-background; }
+  .plan-panel { @apply flex-1 min-w-0 min-h-0 bg-background relative flex flex-col overflow-hidden; }
   .plan-panel-header { @apply h-9 shrink-0 px-3 border-b border-border bg-card/65 flex items-center justify-between; }
   .missing-plan { @apply items-center justify-center gap-2 text-muted-foreground text-sm; }
   .missing-plan span { @apply text-xs; }
+  .resize-handle { @apply relative shrink-0 grid place-items-center bg-background; width: 7px; cursor: col-resize; touch-action: none; }
+  .resize-handle:hover { @apply bg-accent/60; }
+  .resize-handle-grip { @apply h-8 w-[3px] rounded-full bg-border transition-colors; }
+  .resize-handle:hover .resize-handle-grip { @apply bg-muted-foreground/50; }
+  .query-bar { @apply shrink-0 border-b border-border bg-card/70; }
+  .query-bar-head { @apply h-8 px-3 flex items-center gap-2; }
+  .query-bar-text { @apply max-h-[26vh] overflow-auto whitespace-pre-wrap break-words px-3 pb-2.5 pt-0 font-mono text-[11.5px] leading-relaxed text-foreground/90; }
   .filter-bar { @apply absolute z-30 top-2 left-1/2 -translate-x-1/2 max-w-[92%] glass px-2 py-1.5 flex items-center gap-1.5 overflow-x-auto; }
   .filter-chip { @apply h-6 shrink-0 inline-flex items-center gap-1.5 rounded-full border border-border bg-accent/70 pl-2 pr-1 text-[10px]; }
   .filter-chip button { @apply h-4 w-4 grid place-items-center rounded-full hover:bg-card; }
-  .inspector { @apply w-[340px] shrink-0 border-l border-border bg-card/55 flex flex-col min-h-0 animate-slide-in-right; }
+  .inspector { @apply shrink-0 border-l border-border bg-card/55 flex flex-col min-h-0 animate-slide-in-right; width: var(--inspector-w, 340px); }
   .inspector-title { @apply h-10 shrink-0 px-3 border-b border-border flex items-center gap-2; }
   .inspector-scroll { @apply flex-1 min-h-0 overflow-y-auto; }
   .inspector-hero { @apply p-3 border-b border-border bg-gradient-to-br from-sky-500/5 via-transparent to-violet-500/5; }
@@ -125,8 +131,6 @@
 ::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.35); }
 
 @media (max-width: 1100px) {
-  .event-sidebar { width: 220px; }
-  .inspector { width: 310px; }
   .toolbar-label, .document-name { display: none; }
 }
 
@@ -142,7 +146,8 @@
   .sidebar-scroll > * { display: none; }
   .sidebar-scroll > .event-list { display: flex; gap: 6px; padding: 0; }
   .event-card { width: 176px; height: 58px; flex: 0 0 auto; padding-block: 6px; }
-  .canvas-workspace[data-view="split"] .canvas-grid { grid-template-columns: 1fr; grid-template-rows: repeat(2, minmax(0, 1fr)); }
+  .canvas-grid { flex-direction: column; }
+  .resize-handle { display: none; }
   .inspector { position: absolute; z-index: 35; right: 0; bottom: 0; width: min(390px, 100%); height: 58%; border-top: 1px solid hsl(var(--border)); box-shadow: 0 -12px 32px rgb(0 0 0 / 0.22); }
   .filter-bar { left: 6px; right: 6px; transform: none; max-width: none; }
   .react-flow__minimap { display: none; }

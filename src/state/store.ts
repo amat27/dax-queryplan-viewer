@@ -27,6 +27,10 @@ interface AppState {
   showReferences: boolean;
   showMappings: boolean;
   sidebarCollapsed: boolean;
+  sidebarWidth: number;
+  inspectorWidth: number;
+  splitRatio: number;
+  queryBarOpen: boolean;
   selectedNodeId: string | null;
   selectedColumnKey: string | null;
   searchQuery: string;
@@ -42,6 +46,10 @@ interface AppState {
   setShowReferences: (show: boolean) => void;
   setShowMappings: (show: boolean) => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
+  setSidebarWidth: (width: number) => void;
+  setInspectorWidth: (width: number) => void;
+  setSplitRatio: (ratio: number) => void;
+  setQueryBarOpen: (open: boolean) => void;
   setSelectedNode: (id: string | null) => void;
   selectAndCenter: (eventId: string, nodeId: string) => void;
   setSelectedColumnKey: (key: string | null) => void;
@@ -71,6 +79,10 @@ export const useAppStore = create<AppState>((set) => ({
   showReferences: true,
   showMappings: true,
   sidebarCollapsed: false,
+  sidebarWidth: 250,
+  inspectorWidth: 340,
+  splitRatio: 0.5,
+  queryBarOpen: false,
   selectedNodeId: null,
   selectedColumnKey: null,
   searchQuery: '',
@@ -90,6 +102,7 @@ export const useAppStore = create<AppState>((set) => ({
       searchHits: [],
       focusStack: [],
       centerRequest: null,
+      queryBarOpen: false,
     });
   },
   loadDemo: () => {
@@ -103,6 +116,7 @@ export const useAppStore = create<AppState>((set) => ({
       searchQuery: '',
       searchHits: [],
       focusStack: [],
+      queryBarOpen: false,
     });
   },
   setViewMode: (viewMode) => set({ viewMode }),
@@ -126,6 +140,10 @@ export const useAppStore = create<AppState>((set) => ({
   setShowReferences: (showReferences) => set({ showReferences }),
   setShowMappings: (showMappings) => set({ showMappings }),
   setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
+  setSidebarWidth: (width) => set({ sidebarWidth: Math.max(190, Math.min(460, Math.round(width))) }),
+  setInspectorWidth: (width) => set({ inspectorWidth: Math.max(260, Math.min(560, Math.round(width))) }),
+  setSplitRatio: (ratio) => set({ splitRatio: Math.max(0.2, Math.min(0.8, ratio)) }),
+  setQueryBarOpen: (queryBarOpen) => set({ queryBarOpen }),
   setSelectedNode: (selectedNodeId) => set({ selectedNodeId, selectedColumnKey: null }),
   selectAndCenter: (eventId, nodeId) => set((state) => ({
     selectedNodeId: nodeId,

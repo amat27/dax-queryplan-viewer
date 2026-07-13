@@ -21,7 +21,6 @@ import { exportVisiblePlanSvg } from '../lib/export';
 import { cn } from '../lib/cn';
 import { BUILD_INFO } from '../data/changelog';
 import { ChangelogDialog } from './ChangelogDialog';
-import { QueryDialog } from './QueryDialog';
 import { useAppStore } from '../state/store';
 import type { ViewMode } from '../types';
 
@@ -33,6 +32,8 @@ interface Props {
 export function TopBar({ onPaste, onSearch }: Props) {
   const documentName = useAppStore((state) => state.document.name);
   const query = useAppStore((state) => state.document.query);
+  const queryBarOpen = useAppStore((state) => state.queryBarOpen);
+  const setQueryBarOpen = useAppStore((state) => state.setQueryBarOpen);
   const loadInput = useAppStore((state) => state.loadInput);
   const loadDemo = useAppStore((state) => state.loadDemo);
   const viewMode = useAppStore((state) => state.viewMode);
@@ -47,7 +48,6 @@ export function TopBar({ onPaste, onSearch }: Props) {
   const setTheme = useAppStore((state) => state.setTheme);
   const input = useRef<HTMLInputElement | null>(null);
   const [changelogOpen, setChangelogOpen] = useState(false);
-  const [queryOpen, setQueryOpen] = useState(false);
 
   const openFile = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -88,7 +88,12 @@ export function TopBar({ onPaste, onSearch }: Props) {
         <input ref={input} type="file" accept=".json,.txt,application/json,text/plain" className="hidden" onChange={openFile} />
         <button className="btn-outline shrink-0" onClick={onPaste} data-testid="open-paste"><FileJson className="h-3.5 w-3.5" /> Paste</button>
         {query && (
-          <button className="btn-outline shrink-0" onClick={() => setQueryOpen(true)} data-testid="open-query" title="Show the source DAX query">
+          <button
+            className={cn('btn-outline shrink-0', queryBarOpen && 'bg-accent')}
+            onClick={() => setQueryBarOpen(!queryBarOpen)}
+            data-testid="open-query"
+            title="Toggle the source DAX query"
+          >
             <FileCode2 className="h-3.5 w-3.5" /> Query
           </button>
         )}
@@ -123,7 +128,6 @@ export function TopBar({ onPaste, onSearch }: Props) {
         </ToolButton>
       </header>
       <ChangelogDialog open={changelogOpen} onOpenChange={setChangelogOpen} />
-      <QueryDialog open={queryOpen} onOpenChange={setQueryOpen} query={query ?? ''} name={documentName} />
     </Tooltip.Provider>
   );
 }

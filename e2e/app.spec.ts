@@ -62,14 +62,32 @@ test('opens a DAX Studio export object and renders both plans', async ({ page })
   await expect(page.getByTestId('event-sidebar')).toContainText('DAX Studio');
 });
 
-test('shows the source DAX query from a DAX Studio export', async ({ page }) => {
+test('toggles the source DAX query bar and keeps both trees visible', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByTestId('open-query')).toHaveCount(0); // demo has no query
   await page.getByTestId('open-file').click();
   await page.locator('input[type="file"]').setInputFiles(daxStudioFixture);
   await page.getByTestId('open-query').click();
-  await expect(page.getByTestId('query-dialog')).toBeVisible();
-  await expect(page.getByTestId('query-text')).toContainText('SUMMARIZECOLUMNS');
+  await expect(page.getByTestId('query-bar')).toBeVisible();
+  await expect(page.getByTestId('query-bar-text')).toContainText('SUMMARIZECOLUMNS');
+  await expect(page.getByTestId('plan-panel-vp-logical')).toBeVisible();
+  await expect(page.getByTestId('plan-panel-vp-physical')).toBeVisible();
+  await page.getByTestId('open-query').click();
+  await expect(page.getByTestId('query-bar')).toHaveCount(0);
+});
+
+test('the split divider resizes the two plans', async ({ page }) => {
+  await page.goto('/');
+  const logical = page.getByTestId('plan-panel-vp-logical');
+  const before = (await logical.boundingBox())!.width;
+  const handle = page.getByTestId('resize-split');
+  const box = (await handle.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 220, box.y + box.height / 2, { steps: 10 });
+  await page.mouse.up();
+  const after = (await logical.boundingBox())!.width;
+  expect(after).toBeGreaterThan(before + 120);
 });
 
 test('the left sidebar can collapse and expand', async ({ page }) => {

@@ -35,6 +35,7 @@ export function Inspector() {
   const setSelectedColumnKey = useAppStore((state) => state.setSelectedColumnKey);
   const selectAndCenter = useAppStore((state) => state.selectAndCenter);
   const pushFocus = useAppStore((state) => state.pushFocus);
+  const inspectorWidth = useAppStore((state) => state.inspectorWidth);
   const node = findNode(document, selectedNodeId);
   if (!node) return null;
   const event = findEventForNode(document, node.id)!;
@@ -42,7 +43,7 @@ export function Inspector() {
   const parent = node.parentId ? findNode(document, node.parentId) : undefined;
 
   return (
-    <aside className="inspector" data-testid="inspector">
+    <aside className="inspector" data-testid="inspector" style={{ '--inspector-w': `${inspectorWidth}px` } as React.CSSProperties}>
       <div className="inspector-title">
         <Braces className="h-3.5 w-3.5 text-muted-foreground" />
         <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{node.kind}</span>
