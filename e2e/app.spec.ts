@@ -174,6 +174,7 @@ test('serves an installable web app manifest with png icons', async ({ page, req
   const manifest = await response.json();
   expect(manifest.name).toBe('DAX Query Plan Viewer');
   expect(manifest.display).toBe('standalone');
+  expect(manifest.display_override).toBeUndefined();
   expect(manifest.start_url).toBe('/');
   const sizes = manifest.icons.map((icon: { sizes: string }) => icon.sizes);
   expect(sizes).toContain('192x192');
